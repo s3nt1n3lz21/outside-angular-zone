@@ -1,32 +1,40 @@
-import { Component, NgZone } from '@angular/core';
+import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'outside-angular-zone';
   element: HTMLElement = null;
   elementX = 0;
   elementY = 0
   startX = 0;
   startY = 0;
-  boxes = new Array(1000);
+  boxes = new Array(1);
 
   pos1 = 0;
   pos2 = 0;
   pos3 = 0;
   pos4 = 0;
-  elmnt = null;
+  draggedElement: HTMLElement = null;
 
   mouseUpBound = null;
   mouseMoveBound = null;
 
   constructor(private zone: NgZone) {}
 
-  ngOnInit() {
-    this.dragElement(document.getElementById("mydiv"));
+  ngAfterViewInit() {
+    this.draggedElement = null;
+    // document.getElementById("mydiv")
+
+    const draggableElements: NodeListOf<HTMLElement> = window.document.querySelectorAll('.drag-element');
+    console.log('draggableElements: ', draggableElements);
+    draggableElements.forEach((element) => {
+      console.log('adding event listener');
+      element.addEventListener('mousedown', this.mouseDown.bind(this));
+    })
   }
 
   // mouseDown(event) {
@@ -89,30 +97,28 @@ export class AppComponent {
 
 
 
-    dragElement = (elmnt) => {
-      this.elmnt = elmnt;
-      this.pos1 = 0; 
-      this.pos2 = 0;
-      this.pos3 = 0; 
-      this.pos4 = 0;
-      if (document.getElementById(elmnt.id + "header")) {
-        /* if present, the header is where you move the DIV from:*/
-        document.getElementById(elmnt.id + "header").addEventListener('mousedown', this.mouseDown.bind(this));
-        // document.getElementById(elmnt.id + "header").onmousedown = this.mouseDown;
-      } else {
-        /* otherwise, move the DIV from anywhere inside the DIV:*/
-        elmnt.onmousedown = this.mouseDown;
-      }
+    dragElement = (draggedElement) => {
+
+      // if (document.getElementById(draggedElement.id + "header")) {
+      //   /* if present, the header is where you move the DIV from:*/
+      //   document.getElementById(draggedElement.id + "header").addEventListener('mousedown', this.mouseDown.bind(this));
+      //   // document.getElementById(draggedElement.id + "header").onmousedown = this.mouseDown;
+      // } else {
+      //   /* otherwise, move the DIV from anywhere inside the DIV:*/
+      //   draggedElement.onmousedown = this.mouseDown;
+      // }
     }
 
     mouseDown = (e) => {
+
+      this.draggedElement = e.target;
       e = e || window.event;
       e.preventDefault();
       // get the mouse cursor position at startup:
       this.pos3 = e.clientX;
       this.pos4 = e.clientY;
       console.log('mouseDown');
-      this.mouseUpBound = this.moveDown.bind(this);
+      this.mouseUpBound = this.mouseUp.bind(this);
       window.document.addEventListener('mouseup', this.mouseUpBound);
 
       // call a function whenever the cursor moves:
@@ -132,16 +138,19 @@ export class AppComponent {
       this.pos4 = e.clientY;
       console.log('mouseMove');
       // set the element's new position:
-      this.elmnt.style.top = (this.elmnt.offsetTop - this.pos2) + "px";
-      this.elmnt.style.left = (this.elmnt.offsetLeft - this.pos1) + "px";
+      console.log('newTop: ', this.pos4);
+      this.draggedElement.style.top = (this.draggedElement.offsetTop - this.pos2) + "px";
+      this.draggedElement.style.left = (this.draggedElement.offsetLeft - this.pos1) + "px";
+      console.log('draggedElement: ', this.draggedElement);
     }
 
-    moveDown = () => {
+    mouseUp = () => {
 
       /* stop moving when mouse button is released:*/
       window.document.removeEventListener('mousemove', this.mouseMoveBound, false);
       window.document.removeEventListener('mouseup', this.mouseUpBound, false);
       console.log('mouseUp');
+      this.draggedElement = null;
       // document.onmouseup = null;
       // document.onmousemove = null;
     }
