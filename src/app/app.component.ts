@@ -97,32 +97,32 @@ export class AppComponent {
       this.pos4 = 0;
       if (document.getElementById(elmnt.id + "header")) {
         /* if present, the header is where you move the DIV from:*/
-        document.getElementById(elmnt.id + "header").addEventListener('mousedown', this.dragMouseDown.bind(this));
-        // document.getElementById(elmnt.id + "header").onmousedown = this.dragMouseDown;
+        document.getElementById(elmnt.id + "header").addEventListener('mousedown', this.mouseDown.bind(this));
+        // document.getElementById(elmnt.id + "header").onmousedown = this.mouseDown;
       } else {
         /* otherwise, move the DIV from anywhere inside the DIV:*/
-        elmnt.onmousedown = this.dragMouseDown;
+        elmnt.onmousedown = this.mouseDown;
       }
     }
 
-    dragMouseDown = (e) => {
+    mouseDown = (e) => {
       e = e || window.event;
       e.preventDefault();
       // get the mouse cursor position at startup:
       this.pos3 = e.clientX;
       this.pos4 = e.clientY;
       console.log('mouseDown');
-      this.mouseUpBound = this.closeDragElement.bind(this);
+      this.mouseUpBound = this.moveDown.bind(this);
       window.document.addEventListener('mouseup', this.mouseUpBound);
 
       // call a function whenever the cursor moves:
-      // document.onmousemove = this.elementDrag;
+      // document.onmousemove = this.mouseMove;
       console.log('this: ', this);
-      this.mouseMoveBound = this.elementDrag.bind(this);
+      this.mouseMoveBound = this.mouseMove.bind(this);
       window.document.addEventListener('mousemove', this.mouseMoveBound);
     }
 
-    elementDrag = (e) => {
+    mouseMove = (e) => {
       e = e || window.event;
       e.preventDefault();
       // calculate the new cursor position:
@@ -136,7 +136,7 @@ export class AppComponent {
       this.elmnt.style.left = (this.elmnt.offsetLeft - this.pos1) + "px";
     }
 
-    closeDragElement = () => {
+    moveDown = () => {
 
       /* stop moving when mouse button is released:*/
       window.document.removeEventListener('mousemove', this.mouseMoveBound, false);
