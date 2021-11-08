@@ -5,7 +5,8 @@
     (mouseup)="mouseUp($event)"
 >
 </div> -->
-
-<div id="mydiv">
-    <div id="mydivheader">Click here to move</div>
+<div class="body" *ngFor="let box of boxes; index as i">
+    <div class="container" id="container{{i}}" >
+        <div class="header" id="header{{i}}">Click here to move</div>
+    </div>
 </div>

@@ -1,11 +1,16 @@
-.container {
-    border: 1px solid red;
-    // position: absolute;
-    width: 100px;
-    height: 100px;
+// .container {
+//     border: 1px solid red;
+//     // position: absolute;
+//     width: 100px;
+//     height: 100px;
+// }
+.body {
+    display: flex;
+    width: 200px;
+    height: 200px;
 }
 
-#mydiv {
+.container {
     position: absolute;
     z-index: 9;
     background-color: #f1f1f1;
@@ -13,7 +18,7 @@
     border: 1px solid #d3d3d3;
   }
   
-  #mydivheader {
+  .header {
     padding: 10px;
     cursor: move;
     z-index: 10;
