@@ -12,7 +12,7 @@ export class AppComponent implements AfterViewInit {
   elementY = 0
   startX = 0;
   startY = 0;
-  boxes = new Array(1);
+  boxes = new Array(2).fill(0);
 
   pos1 = 0;
   pos2 = 0;
@@ -27,12 +27,15 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.draggedElement = null;
-    // document.getElementById("mydiv")
 
-    const draggableElements: NodeListOf<HTMLElement> = window.document.querySelectorAll('.drag-element');
-    console.log('draggableElements: ', draggableElements);
-    draggableElements.forEach((element) => {
+
+    // const draggableElements: NodeListOf<HTMLElement> = window.document.querySelectorAll('.drag-element');
+    // console.log('draggableElements: ', draggableElements);
+    console.log('this.boxes: ', this.boxes);
+    this.boxes.forEach((b, index) => {
       console.log('adding event listener');
+      const element = document.getElementById("drag-element" + index);
+
       element.addEventListener('mousedown', this.mouseDown.bind(this));
     })
   }
