@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "outside-angular-zone"
+    }
+  },
+  "defaultProject": "outside-angular-zone",
+  "cli": {
+    "analytics": false
+  }
 }

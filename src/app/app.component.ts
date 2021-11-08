@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +7,142 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'outside-angular-zone';
+  element: HTMLElement = null;
+  elementX = 0;
+  elementY = 0
+  startX = 0;
+  startY = 0;
+  boxes = new Array(1000);
+
+  pos1 = 0;
+  pos2 = 0;
+  pos3 = 0;
+  pos4 = 0;
+  elmnt = null;
+
+  mouseUpBound = null;
+  mouseMoveBound = null;
+
+  constructor(private zone: NgZone) {}
+
+  ngOnInit() {
+    this.dragElement(document.getElementById("mydiv"));
+  }
+
+  // mouseDown(event) {
+
+  //   // Get initial element position
+  //   this.startX = event.clientX;
+  //   this.startY = event.clientY;
+    
+  //   // Keep a reference to the target element
+  //   this.element = event.target;
+  //   console.log('mousedown target: ', this.element);
+
+  //   // Execute this code but don't update the UI on every mousemove event
+  //   this.zone.runOutsideAngular(() => {
+  //     window.document.addEventListener('mousemove', this.mouseMove.bind(this));
+  //   });
+  // }
+
+  // mouseMove(event) {
+  //   event.preventDefault();
+
+  //   console.log('move: ', event);
+
+  //   // Calculate new cursor position
+  //   // this.elementX = this.startX - event.clientX;
+  //   // this.elementY = this.startY - event.clientY;
+  //   // this.startX = event.clientX;
+  //   // this.startY = event.clientY;
+
+  //   // Set the new element position
+  //   if (this.element) {
+  //     this.updateBoxPosition(this.element, event.clientX, event.clientY);
+  //   }
+  // }
+
+  // updateBoxPosition(element, x, y) {
+  //   element.setAttribute('offsetTop', Number(y));
+  //   element.setAttribute('offsetLeft', Number(x));
+  //   console.log('element: ', element);
+  // } 
+
+  // mouseUp(event) {
+  //   // Only update the UI when the user stops holding mouse down
+  //   this.zone.run(() => {
+  //     this.updateBoxPosition(this.element, event.clientX, event.clientY);
+  //   })
+  //   console.log('this.element finished: ', this.element);
+  //   this.element = null;
+  //   window.document.removeEventListener('mousemove', this.mouseMove);
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+    dragElement = (elmnt) => {
+      this.elmnt = elmnt;
+      this.pos1 = 0; 
+      this.pos2 = 0;
+      this.pos3 = 0; 
+      this.pos4 = 0;
+      if (document.getElementById(elmnt.id + "header")) {
+        /* if present, the header is where you move the DIV from:*/
+        document.getElementById(elmnt.id + "header").addEventListener('mousedown', this.dragMouseDown.bind(this));
+        // document.getElementById(elmnt.id + "header").onmousedown = this.dragMouseDown;
+      } else {
+        /* otherwise, move the DIV from anywhere inside the DIV:*/
+        elmnt.onmousedown = this.dragMouseDown;
+      }
+    }
+
+    dragMouseDown = (e) => {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      this.pos3 = e.clientX;
+      this.pos4 = e.clientY;
+      console.log('mouseDown');
+      this.mouseUpBound = this.closeDragElement.bind(this);
+      window.document.addEventListener('mouseup', this.mouseUpBound);
+
+      // call a function whenever the cursor moves:
+      // document.onmousemove = this.elementDrag;
+      console.log('this: ', this);
+      this.mouseMoveBound = this.elementDrag.bind(this);
+      window.document.addEventListener('mousemove', this.mouseMoveBound);
+    }
+
+    elementDrag = (e) => {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      this.pos1 = this.pos3 - e.clientX;
+      this.pos2 = this.pos4 - e.clientY;
+      this.pos3 = e.clientX;
+      this.pos4 = e.clientY;
+      console.log('mouseMove');
+      // set the element's new position:
+      this.elmnt.style.top = (this.elmnt.offsetTop - this.pos2) + "px";
+      this.elmnt.style.left = (this.elmnt.offsetLeft - this.pos1) + "px";
+    }
+
+    closeDragElement = () => {
+
+      /* stop moving when mouse button is released:*/
+      window.document.removeEventListener('mousemove', this.mouseMoveBound, false);
+      window.document.removeEventListener('mouseup', this.mouseUpBound, false);
+      console.log('mouseUp');
+      // document.onmouseup = null;
+      // document.onmousemove = null;
+    }
 }
