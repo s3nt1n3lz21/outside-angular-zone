@@ -25,14 +25,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.boxes.forEach((b, index) => {
       this.containerElement = document.getElementById("container" + index);
-      if (document.getElementById("header" + index)) {
-        /* if present, the header is where you move the DIV from:*/
-        document.getElementById("header" + index).addEventListener('mousedown', this.mouseDown.bind(this));
-        // document.getElementById(containerElement.id + "header").onmousedown = this.mouseDown;
-      } else {
-        /* otherwise, move the DIV from anywhere inside the DIV:*/
-        this.containerElement.onmousedown = this.mouseDown;
-      }
+      this.containerElement.addEventListener('mousedown', this.mouseDown.bind(this));
     })
   }
 
@@ -72,7 +65,7 @@ export class AppComponent implements AfterViewInit {
     mouseDown = (e) => {
       console.log('mouseDown');
       // Set the draggable element
-      this.containerElement = e.target.parentElement;
+      this.containerElement = e.target;
       e = e || window.event;
       e.preventDefault();
       // get the mouse cursor position at startup:
