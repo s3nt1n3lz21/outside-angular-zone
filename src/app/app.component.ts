@@ -12,7 +12,7 @@ export class AppComponent implements AfterViewInit {
   elementY = 0
   startX = 0;
   startY = 0;
-  boxes = new Array(2).fill(0);
+  boxes = new Array(10).fill(0);
 
   pos1 = 0;
   pos2 = 0;
@@ -26,7 +26,21 @@ export class AppComponent implements AfterViewInit {
   constructor(private zone: NgZone) {}
 
   ngAfterViewInit() {
-    this.dragElement(document.getElementById("container0"));
+    this.boxes.forEach((b, index) => {
+      this.containerElement = document.getElementById("container" + index);
+      this.pos1 = 0; 
+      this.pos2 = 0;
+      this.pos3 = 0;
+      this.pos4 = 0;
+      if (document.getElementById("header" + index)) {
+        /* if present, the header is where you move the DIV from:*/
+        document.getElementById("header" + index).addEventListener('mousedown', this.mouseDown.bind(this));
+        // document.getElementById(containerElement.id + "header").onmousedown = this.mouseDown;
+      } else {
+        /* otherwise, move the DIV from anywhere inside the DIV:*/
+        this.containerElement.onmousedown = this.mouseDown;
+      }
+    })
   }
 
   // mouseDown(event) {
@@ -90,22 +104,12 @@ export class AppComponent implements AfterViewInit {
 
 
     dragElement = (containerElement) => {
-      this.containerElement = containerElement;
-      this.pos1 = 0; 
-      this.pos2 = 0;
-      this.pos3 = 0; 
-      this.pos4 = 0;
-      if (document.getElementById("header0")) {
-        /* if present, the header is where you move the DIV from:*/
-        document.getElementById("header0").addEventListener('mousedown', this.mouseDown.bind(this));
-        // document.getElementById(containerElement.id + "header").onmousedown = this.mouseDown;
-      } else {
-        /* otherwise, move the DIV from anywhere inside the DIV:*/
-        containerElement.onmousedown = this.mouseDown;
-      }
+
     }
 
     mouseDown = (e) => {
+      console.log('targetElement: ', e.target.parentElement);
+       this.containerElement = e.target.parentElement;
       e = e || window.event;
       e.preventDefault();
       // get the mouse cursor position at startup:
