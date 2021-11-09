@@ -8,14 +8,14 @@ import { AfterViewInit, Component, NgZone } from '@angular/core';
 export class AppComponent implements AfterViewInit {
   title = 'outside-angular-zone';
 
-  boxes = new Array(1000).fill(0);
+  boxes = new Array(20000).fill(0);
 
   pos1 = 0;
   pos2 = 0;
   pos3 = 0;
   pos4 = 0;
 
-  containerElement = null;
+  containerElement: HTMLEl = null;
 
   mouseUpBound = null;
   mouseMoveBound = null;
@@ -72,17 +72,37 @@ export class AppComponent implements AfterViewInit {
       this.pos3 = e.clientX;
       this.pos4 = e.clientY;
 
-      this.mouseUpBound = this.moveDown.bind(this);
+      this.mouseUpBound = this.mouseUp.bind(this);
       window.document.addEventListener('mouseup', this.mouseUpBound);
 
       this.mouseMoveBound = this.mouseMove.bind(this);
-      window.document.addEventListener('mousemove', this.mouseMoveBound);
+
+      // Execute this code but don't update the UI
+      this.zone.runOutsideAngular(() => {
+        window.document.addEventListener('mousemove', this.mouseMoveBound);
+      });
     }
 
     mouseMove = (e) => {
-      console.log('mouseMove');
+      // console.log('mouseMove');
       e = e || window.event;
       e.preventDefault();
+      this.updateElementPosition(e);
+    }
+
+    mouseUp = (e) => {
+      console.log('mouseUp');
+
+      // Execute this code and do perform change detection and update the UI
+      this.zone.run(() => {
+        this.updateElementPosition(e);
+      })
+
+      window.document.removeEventListener('mousemove', this.mouseMoveBound, false);
+      window.document.removeEventListener('mouseup', this.mouseUpBound, false);
+    }
+
+    updateElementPosition(e) {
       // calculate the new cursor position:
       this.pos1 = this.pos3 - e.clientX;
       this.pos2 = this.pos4 - e.clientY;
@@ -92,12 +112,5 @@ export class AppComponent implements AfterViewInit {
       // set the element's new position:
       this.containerElement.style.top = (this.containerElement.offsetTop - this.pos2) + "px";
       this.containerElement.style.left = (this.containerElement.offsetLeft - this.pos1) + "px";
-    }
-
-    moveDown = () => {
-      console.log('mouseUp');
-      /* stop moving when mouse button is released:*/
-      window.document.removeEventListener('mousemove', this.mouseMoveBound, false);
-      window.document.removeEventListener('mouseup', this.mouseUpBound, false);
     }
 }
